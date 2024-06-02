@@ -1,0 +1,39 @@
+name: Benchmark Go and Rust
+
+on: [push, pull_request]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        language: [go, rust]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      if: matrix.language == 'go'
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.16'
+
+    - name: Set up Rust
+      if: matrix.language == 'rust'
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Build and run Go program
+      if: matrix.language == 'go'
+      run: |
+        cd go
+        go run main.go
+
+    - name: Build and run Rust program
+      if: matrix.language == 'rust'
+      run: |
+        cd rust
+        cargo run --release
